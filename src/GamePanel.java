@@ -4,8 +4,8 @@ import java.awt.image.*;
 
 public class GamePanel extends JPanel implements Runnable {
 
-    public static int WIDTH = 400;
-    public static int HEIGHT = 600;
+    public static int WIDTH = 800;
+    public static int HEIGHT = 800;
 
     private Thread thread;
     private boolean running;
@@ -13,10 +13,10 @@ public class GamePanel extends JPanel implements Runnable {
     private BufferedImage image;
     private Graphics2D g;
 
-
+    private Board board;
 
     // Constructor
-    public  GamePanel()
+    public GamePanel()
     {
         super();
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
@@ -44,6 +44,9 @@ public class GamePanel extends JPanel implements Runnable {
 
         image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         g = (Graphics2D) image.getGraphics();
+
+        board = new Board();
+
         while (running)
         {
             gameUpdate();
@@ -61,9 +64,10 @@ public class GamePanel extends JPanel implements Runnable {
 
     private void gameRender()
     {
-        g.setColor(Color.WHITE);
+        g.setColor(Color.BLACK);
         g.fillRect(0, 0, WIDTH, HEIGHT);
         g.setColor(Color.BLACK);
+        board.draw(g, WIDTH, HEIGHT);
         g.drawString("Pls start working", 100, 100);
     }
 
