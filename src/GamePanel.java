@@ -15,6 +15,8 @@ public class GamePanel extends JPanel implements Runnable {
 
     private Board board;
 
+    private Color GREY = new Color(125, 83, 36);
+
     // Constructor
     public GamePanel()
     {
@@ -64,9 +66,9 @@ public class GamePanel extends JPanel implements Runnable {
 
     private void gameRender()
     {
-        g.setColor(Color.BLACK);
+        g.setColor(GREY);
         g.fillRect(0, 0, WIDTH, HEIGHT);
-        g.setColor(Color.BLACK);
+        g.setColor(GREY);
         board.draw(g, WIDTH, HEIGHT);
         g.drawString("Pls start working", 100, 100);
     }
