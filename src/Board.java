@@ -22,8 +22,18 @@ public class Board {
 
     public void update()
     {
-
+        move_piece(board[0][1], 3, 3);
     }
+
+    public void move_piece(Piece piece, int row, int col)
+    {
+        Piece temp;
+        temp = piece;
+        board[piece.row][piece.col] = board[row][col];
+        board[row][col] = temp;
+        board[row][col].move(row, col);
+    }
+
 
     public void draw(Graphics2D g, int window_width, int windhow_height)
     {
@@ -67,48 +77,6 @@ public class Board {
                 else
                 {
                     board[i][j] = new Piece(true);
-                }
-            }
-        }
-
-
-
-        // Creating the white pieces
-        for (int i = 0; i < 3; i++)
-        {
-            if (i % 2 == 0)
-            {
-                for (int j = 1; j < 8; j += 2)
-                {
-                    board[i][j] = new Piece(i, j , WHITE);
-                }
-            }
-
-            if (i % 2 != 0)
-            {
-                for (int j = 0; j < 8; j += 2)
-                {
-                    board[i][j] = new Piece(i, j, WHITE);
-                }
-            }
-        }
-
-        // Creating the black pieces
-        for (int i = 5; i < 8; i++)
-        {
-            if (i % 2 == 0)
-            {
-                for (int j = 1; j < 8; j += 2)
-                {
-                    board[i][j] = new Piece(i, j , BLACK);
-                }
-            }
-
-            if (i % 2 != 0)
-            {
-                for (int j = 0; j < 8; j += 2)
-                {
-                    board[i][j] = new Piece(i, j, BLACK);
                 }
             }
         }

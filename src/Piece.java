@@ -1,8 +1,8 @@
 import java.awt.*;
 
 public class Piece {
-    private int row;
-    private int col;
+    public int row;
+    public int col;
     private Color color;
     private int x = 0;
     private int y = 0;
@@ -27,6 +27,12 @@ public class Piece {
     {
         x = col * 100 + 10;
         y = row * 100 + 10;
+    }
+
+    public void move(int _row, int _col)
+    {
+        row = _row;
+        col = _col;
     }
 
 

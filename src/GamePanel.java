@@ -1,5 +1,7 @@
 import javax.swing.JPanel;
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseAdapter;
 import java.awt.image.*;
 
 public class GamePanel extends JPanel implements Runnable {
@@ -24,6 +26,11 @@ public class GamePanel extends JPanel implements Runnable {
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setFocusable(true);
         requestFocus();
+        addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent me) {
+                System.out.println(me.getX());
+            }
+        });
     }
 
     // Functions
@@ -60,7 +67,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     private void gameUpdate()
     {
-
+        board.update();
     }
 
 
@@ -80,6 +87,12 @@ public class GamePanel extends JPanel implements Runnable {
         g2.drawImage(image, 0, 0, null);
         g2.dispose();
     }
+
+
+
+
+
+
 
 
 
