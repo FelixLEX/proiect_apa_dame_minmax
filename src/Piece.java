@@ -6,6 +6,7 @@ public class Piece {
     private Color color;
     private int x = 0;
     private int y = 0;
+    private boolean is_king = false;
     public boolean is_fake = false;
 
 
@@ -22,6 +23,10 @@ public class Piece {
         is_fake = fake;
     }
 
+    public void make_king()
+    {
+        is_king = true;
+    }
 
     private void calculate_pos()
     {

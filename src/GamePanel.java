@@ -1,8 +1,12 @@
+import com.sun.xml.internal.ws.api.ha.StickyFeature;
+
 import javax.swing.JPanel;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.image.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class GamePanel extends JPanel implements Runnable {
 
@@ -22,7 +26,9 @@ public class GamePanel extends JPanel implements Runnable {
 
     private Color GREY = new Color(125, 83, 36);
 
-    // Constructor
+    // TODO: Bad design, find another way to store moves including multiple jumps.
+    private Map<String, Vector2i> moves = new HashMap<String, Vector2i>();
+
     public GamePanel()
     {
         super();
@@ -51,7 +57,6 @@ public class GamePanel extends JPanel implements Runnable {
         });
     }
 
-    // Functions
     public void addNotify()
     {
         super.addNotify();
@@ -106,4 +111,18 @@ public class GamePanel extends JPanel implements Runnable {
         g2.drawImage(image, 0, 0, null);
         g2.dispose();
     }
+
+
+    public Map<String, Vector2i> get_valid_move(Piece piece)
+    {
+        Map<String, Vector2i> moves = new HashMap<String, Vector2i>();
+
+        int left = piece.col - 1;
+        int right = piece.row + 1;
+        int row = piece.row;
+
+        return moves;
+    }
+
+
 }
