@@ -17,6 +17,9 @@ public class GamePanel extends JPanel implements Runnable {
 
     private Board board;
 
+    private int  mouse_x;
+    private int  mouse_y;
+
     private Color GREY = new Color(125, 83, 36);
 
     // Constructor
@@ -26,9 +29,24 @@ public class GamePanel extends JPanel implements Runnable {
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setFocusable(true);
         requestFocus();
+
+
         addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent me) {
-                System.out.println(me.getX());
+            public void mousePressed(MouseEvent e) {
+                mouse_x = e.getX();
+                mouse_y = e.getY();
+
+                if (board.selected[0] == 99) {
+                    if (!board.get_piece(mouse_x / 100, mouse_y / 100).is_fake)
+                    {
+                        board.select(g, mouse_x, mouse_y);
+                    }
+                }
+                else
+                {
+                    board.move_piece(board.get_piece(board.selected[0], board.selected[1]), mouse_y / 100, mouse_x / 100);
+                    board.selected[0] = 99;
+                }
             }
         });
     }
@@ -68,6 +86,7 @@ public class GamePanel extends JPanel implements Runnable {
     private void gameUpdate()
     {
         board.update();
+
     }
 
 
@@ -87,13 +106,4 @@ public class GamePanel extends JPanel implements Runnable {
         g2.drawImage(image, 0, 0, null);
         g2.dispose();
     }
-
-
-
-
-
-
-
-
-
 }

@@ -1,8 +1,7 @@
 import java.awt.*;
 import java.security.PrivateKey;
 
-import static java.awt.Color.BLACK;
-import static java.awt.Color.WHITE;
+import static java.awt.Color.*;
 
 public class Board {
 
@@ -13,16 +12,18 @@ public class Board {
     private int white_kings = 0;
     private int black_kings = 0;
     private Piece[][] board = new Piece[8][8];
+    public int selected[] = new int[2];
+    public boolean selection = false;
 
 
-    public Board()
-    {
+    public Board() {
+        selected[0] = 99;
+        selected[1] = 99;
         fill_board();
     }
 
     public void update()
     {
-        move_piece(board[0][1], 3, 3);
     }
 
     public void move_piece(Piece piece, int row, int col)
@@ -34,10 +35,15 @@ public class Board {
         board[row][col].move(row, col);
     }
 
-
-    public void draw(Graphics2D g, int window_width, int windhow_height)
+    public Piece get_piece(int x, int y)
     {
-        draw_squares(g, window_width, windhow_height);
+        return board[y][x];
+    }
+
+
+    public void draw(Graphics2D g, int window_width, int window_height)
+    {
+        draw_squares(g, window_width, window_height);
 
         for (int i = 0; i < 8; i++)
         {
@@ -49,6 +55,14 @@ public class Board {
                 }
             }
         }
+
+        if(selection)
+        {
+            g.setColor(RED);
+            g.fillOval(selected[0]*100+40, selected[1]*100+40, 20,20);
+        }
+
+
     }
 
 
@@ -102,6 +116,15 @@ public class Board {
                 g.fillRect(x, y, 100, 100);
             }
         }
+    }
+
+
+
+    public void select(Graphics2D g, int x_coord, int y_coord)
+    {
+        selection = true;
+        selected[0] = x_coord / 100;
+        selected[1] = y_coord / 100;
     }
 
 }
