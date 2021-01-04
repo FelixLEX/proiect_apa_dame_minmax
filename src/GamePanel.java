@@ -26,9 +26,6 @@ public class GamePanel extends JPanel implements Runnable {
 
     private Color GREY = new Color(125, 83, 36);
 
-    // TODO: Bad design, find another way to store moves including multiple jumps.
-    private Map<String, Vector2i> moves = new HashMap<String, Vector2i>();
-
     public GamePanel()
     {
         super();
@@ -72,6 +69,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void run()
     {
+
         running = true;
 
         image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
@@ -81,6 +79,20 @@ public class GamePanel extends JPanel implements Runnable {
 
         while (running)
         {
+            if (board.check_winner() != Color.GREEN)
+            {
+                g.setColor(Color.PINK);
+                if (board.check_winner() == Color.BLACK)
+                {
+                    g.drawString("You won.", 400, 400);
+                }
+                else if(board.check_winner() == Color.WHITE)
+                {
+                    g.drawString("You lost.", 400, 400);
+                }
+
+                running = false;
+            }
             gameUpdate();
             gameRender();
             gameDraw();
@@ -110,18 +122,6 @@ public class GamePanel extends JPanel implements Runnable {
         Graphics g2 = this.getGraphics();
         g2.drawImage(image, 0, 0, null);
         g2.dispose();
-    }
-
-
-    public Map<String, Vector2i> get_valid_move(Piece piece)
-    {
-        Map<String, Vector2i> moves = new HashMap<String, Vector2i>();
-
-        int left = piece.col - 1;
-        int right = piece.row + 1;
-        int row = piece.row;
-
-        return moves;
     }
 
 

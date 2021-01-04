@@ -3,10 +3,10 @@ import java.awt.*;
 public class Piece {
     public int row;
     public int col;
-    private Color color;
+    public Color color;
     private int x = 0;
     private int y = 0;
-    private boolean is_king = false;
+    public boolean is_king = false;
     public boolean is_fake = false;
 
 

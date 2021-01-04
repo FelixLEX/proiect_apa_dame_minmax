@@ -1,5 +1,7 @@
 import java.awt.*;
 import java.security.PrivateKey;
+import java.util.*;
+import java.util.List;
 
 import static java.awt.Color.*;
 
@@ -14,7 +16,7 @@ public class Board {
     private Piece[][] board = new Piece[8][8];
     public int selected[] = new int[2];
     public boolean selection = false;
-
+    private Map<Vector2i, List<Piece>> moves = new HashMap<Vector2i, List<Piece>>();
 
     public Board() {
         selected[0] = 99;
@@ -33,6 +35,10 @@ public class Board {
         board[piece.row][piece.col] = board[row][col];
         board[row][col] = temp;
         board[row][col].move(row, col);
+        if (row == 7 || row == 0)
+        {
+            board[row][col].make_king();
+        }
     }
 
     public Piece get_piece(int x, int y)
@@ -126,5 +132,234 @@ public class Board {
         selected[0] = x_coord / 100;
         selected[1] = y_coord / 100;
     }
+
+
+    public Color check_winner()
+    {
+        if (white_left == 0)
+        {
+            return WHITE;
+        }
+        else if(black_left == 0)
+        {
+            return BLACK;
+        }
+        else {
+            // TODO: Find a better way to say the game is not over
+            // Green means there we do not have a winner yet
+            return GREEN;
+        }
+    }
+
+
+    public Map<Vector2i, List<Piece>> get_valid_moves(Piece piece)
+    {
+        Map<Vector2i, List<Piece>> moves = new HashMap<Vector2i, List<Piece>>();
+
+        int left = piece.col - 1;
+        int right = piece.row + 1;
+        int row = piece.row;
+
+        if (piece.color == BLACK || piece.is_king)
+        {
+            List<Piece> temp = new ArrayList<>();
+            Map<Vector2i, List<Piece>> rec_trav = traverse_left(row - 1, Math.max(row-3, -1), -1, piece.color, left, temp);
+            Set<Vector2i> keys = rec_trav.keySet();
+            int n = keys.size();
+            List<Vector2i> keys_list = new ArrayList<Vector2i>(n);
+            for (Vector2i x : keys)
+                keys_list.add(x);
+
+            Map<Vector2i, List<Piece>> rec_trav_right = traverse_right(row - 1, Math.max(row-3, -1), -1, piece.color, right, temp);
+            Set<Vector2i> keys_right = rec_trav_right.keySet();
+            int n_right = keys_right.size();
+            List<Vector2i> keys_list_right = new ArrayList<Vector2i>(n_right);
+            for (Vector2i x : keys_right)
+                keys_list_right.add(x);
+
+            moves.put(keys_list.get(0), rec_trav.get(keys_list.get(0)));
+            moves.put(keys_list_right.get(0), rec_trav_right.get(keys_list_right.get(0)));
+        }
+
+        if (piece.color == WHITE || piece.is_king)
+        {
+            List<Piece> temp = new ArrayList<>();
+            Map<Vector2i, List<Piece>> rec_trav = traverse_left(row + 1, Math.min(row+3, 8), 1, piece.color, left, temp);
+            Set<Vector2i> keys = rec_trav.keySet();
+            int n = keys.size();
+            List<Vector2i> keys_list = new ArrayList<Vector2i>(n);
+            for (Vector2i x : keys)
+                keys_list.add(x);
+
+            Map<Vector2i, List<Piece>> rec_trav_right = traverse_right(row + 1, Math.min(row+3, 8), 1, piece.color, right, temp);
+            Set<Vector2i> keys_right = rec_trav_right.keySet();
+            int n_right = keys_right.size();
+            List<Vector2i> keys_list_right = new ArrayList<Vector2i>(n_right);
+            for (Vector2i x : keys_right)
+                keys_list_right.add(x);
+
+            moves.put(keys_list.get(0), rec_trav.get(keys_list.get(0)));
+            moves.put(keys_list_right.get(0), rec_trav_right.get(keys_list_right.get(0)));
+        }
+
+
+        return moves;
+    }
+
+
+    private Map<Vector2i, List<Piece>> traverse_left(int start, int stop, int step, Color color, int left, List<Piece> skipped)
+    {
+        Map<Vector2i, List<Piece>> moves = new HashMap<Vector2i, List<Piece>>();
+        List<Piece> last = new ArrayList<>();
+
+        for (int i = start; i < stop; i+=step)
+        {
+            if (left < 0)
+            {
+                break;
+            }
+
+            Piece current = board[i][left];
+
+            if (current.is_fake)
+            {
+                if (!skipped.isEmpty() && last.isEmpty())
+                {
+                    break;
+                }
+                else if(!skipped.isEmpty())
+                {
+                    List<Piece> temp = new ArrayList<>();
+                    temp.addAll(last);
+                    temp.addAll(skipped);
+                    moves.put(new Vector2i(i, left), temp);
+                }
+                else
+                {
+                    List<Piece> temp = new ArrayList<>();
+                    temp.addAll(last);
+                    moves.put(new Vector2i(i, left), temp);
+                }
+
+                if (!last.isEmpty())
+                {
+                    int row;
+                    if (step == -1) {
+                        row = Math.max(i - 3, 0);
+                    } else {
+                        row = Math.min(i + 3, 0);
+                    }
+                    List<Piece> temp = new ArrayList<>();
+                    temp.addAll(last);
+
+                    Map<Vector2i, List<Piece>> rec_trav = traverse_left(i + step, row, step, color, left - 1, temp);
+                    Set<Vector2i> keys = rec_trav.keySet();
+                    int n = keys.size();
+                    List<Vector2i> keys_list = new ArrayList<Vector2i>(n);
+                    for (Vector2i x : keys)
+                        keys_list.add(x);
+
+                    Map<Vector2i, List<Piece>> rec_trav_right = traverse_right(i + step, row, step, color, left + 1, temp);
+                    Set<Vector2i> keys_right = rec_trav_right.keySet();
+                    int n_right = keys_right.size();
+                    List<Vector2i> keys_list_right = new ArrayList<Vector2i>(n_right);
+                    for (Vector2i x : keys_right)
+                        keys_list_right.add(x);
+
+                    moves.put(keys_list.get(0), rec_trav.get(keys_list.get(0)));
+                    moves.put(keys_list_right.get(0), rec_trav_right.get(keys_list_right.get(0)));
+                }
+                break;
+            } else if (current.color == color) {
+                break;
+            } else{
+                List<Piece> temp = new ArrayList<>();
+                temp.add(current);
+                last = temp;
+            }
+
+            left--;
+        }
+        return moves;
+    }
+
+
+    private Map<Vector2i, List<Piece>> traverse_right(int start, int stop, int step, Color color, int right, List<Piece> skipped)
+    {
+        Map<Vector2i, List<Piece>> moves = new HashMap<Vector2i, List<Piece>>();
+        List<Piece> last = new ArrayList<>();
+
+        for (int i = start; i < stop; i+=step)
+        {
+            if (right > 7)
+            {
+                break;
+            }
+
+            Piece current = board[i][right];
+
+            if (current.is_fake)
+            {
+                if (!skipped.isEmpty() && last.isEmpty())
+                {
+                    break;
+                }
+                else if(!skipped.isEmpty())
+                {
+                    List<Piece> temp = new ArrayList<>();
+                    temp.addAll(last);
+                    temp.addAll(skipped);
+                    moves.put(new Vector2i(i, right), temp);
+                }
+                else
+                {
+                    List<Piece> temp = new ArrayList<>();
+                    temp.addAll(last);
+                    moves.put(new Vector2i(i, right), temp);
+                }
+
+                if (!last.isEmpty())
+                {
+                    int row;
+                    if (step == -1) {
+                        row = Math.max(i - 3, 0);
+                    } else {
+                        row = Math.min(i + 3, 0);
+                    }
+                    List<Piece> temp = new ArrayList<>();
+                    temp.addAll(last);
+
+                    Map<Vector2i, List<Piece>> rec_trav = traverse_left(i + step, row, step, color, right - 1, temp);
+                    Set<Vector2i> keys = rec_trav.keySet();
+                    int n = keys.size();
+                    List<Vector2i> keys_list = new ArrayList<Vector2i>(n);
+                    for (Vector2i x : keys)
+                        keys_list.add(x);
+
+                    Map<Vector2i, List<Piece>> rec_trav_right = traverse_right(i + step, row, step, color, right + 1, temp);
+                    Set<Vector2i> keys_right = rec_trav.keySet();
+                    int n_right = keys_right.size();
+                    List<Vector2i> keys_list_right = new ArrayList<Vector2i>(n);
+                    for (Vector2i x : keys_right)
+                        keys_list_right.add(x);
+
+                    moves.put(keys_list.get(0), rec_trav.get(keys_list.get(0)));
+                    moves.put(keys_list_right.get(0), rec_trav_right.get(keys_list_right.get(0)));
+                }
+                break;
+            } else if (current.color == color) {
+                break;
+            } else{
+                List<Piece> temp = new ArrayList<>();
+                temp.add(current);
+                last = temp;
+            }
+
+            right++;
+        }
+        return moves;
+    }
+
+
 
 }
