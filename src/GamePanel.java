@@ -47,8 +47,15 @@ public class GamePanel extends JPanel implements Runnable {
                 }
                 else
                 {
-                    board.move_piece(board.get_piece(board.selected[0], board.selected[1]), mouse_y / 100, mouse_x / 100);
-                    board.selected[0] = 99;
+                    if(!board.is_ocupied(mouse_x, mouse_y))
+                    {
+                        board.move_piece(board.get_piece(board.selected[0], board.selected[1]), mouse_y / 100, mouse_x / 100);
+                        board.selected[0] = 99;
+                    }
+                    else
+                    {
+                        board.select(g, mouse_x, mouse_y);
+                    }
                 }
             }
         });
@@ -69,7 +76,6 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void run()
     {
-
         running = true;
 
         image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
