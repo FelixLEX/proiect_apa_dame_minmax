@@ -186,8 +186,15 @@ public class Board {
             for (Vector2i x : keys_right)
                 keys_list_right.add(x);
 
-            moves.put(keys_list.get(0), rec_trav.get(keys_list.get(0)));
-            moves.put(keys_list_right.get(0), rec_trav_right.get(keys_list_right.get(0)));
+            if (!keys_list.isEmpty())
+            {
+                moves.put(keys_list.get(0), rec_trav.get(keys_list.get(0)));
+            }
+
+            if (!keys_list_right.isEmpty())
+            {
+                moves.put(keys_list_right.get(0), rec_trav_right.get(keys_list_right.get(0)));
+            }
         }
 
         if (piece.color == WHITE || piece.is_king) {
@@ -206,8 +213,15 @@ public class Board {
             for (Vector2i x : keys_right)
                 keys_list_right.add(x);
 
-            moves.put(keys_list.get(0), rec_trav.get(keys_list.get(0)));
-            moves.put(keys_list_right.get(0), rec_trav_right.get(keys_list_right.get(0)));
+            if (!keys_list.isEmpty())
+            {
+                moves.put(keys_list.get(0), rec_trav.get(keys_list.get(0)));
+            }
+
+            if (!keys_list_right.isEmpty())
+            {
+                moves.put(keys_list_right.get(0), rec_trav_right.get(keys_list_right.get(0)));
+            }
         }
 
 
@@ -267,8 +281,15 @@ public class Board {
                         for (Vector2i x : keys_right)
                             keys_list_right.add(x);
 
-                        moves.put(keys_list.get(0), rec_trav.get(keys_list.get(0)));
-                        moves.put(keys_list_right.get(0), rec_trav_right.get(keys_list_right.get(0)));
+                        if (!keys_list.isEmpty())
+                        {
+                            moves.put(keys_list.get(0), rec_trav.get(keys_list.get(0)));
+                        }
+
+                        if (!keys_list_right.isEmpty())
+                        {
+                            moves.put(keys_list_right.get(0), rec_trav_right.get(keys_list_right.get(0)));
+                        }
                     }
                     break;
                 } else if (current.color == color) {
@@ -329,8 +350,15 @@ public class Board {
                         for (Vector2i x : keys_right)
                             keys_list_right.add(x);
 
-                        moves.put(keys_list.get(0), rec_trav.get(keys_list.get(0)));
-                        moves.put(keys_list_right.get(0), rec_trav_right.get(keys_list_right.get(0)));
+                        if (!keys_list.isEmpty())
+                        {
+                            moves.put(keys_list.get(0), rec_trav.get(keys_list.get(0)));
+                        }
+
+                        if (!keys_list_right.isEmpty())
+                        {
+                            moves.put(keys_list_right.get(0), rec_trav_right.get(keys_list_right.get(0)));
+                        }
                     }
                     break;
                 } else if (current.color == color) {
@@ -400,8 +428,15 @@ public class Board {
                         for (Vector2i x : keys_right)
                             keys_list_right.add(x);
 
-                        moves.put(keys_list.get(0), rec_trav.get(keys_list.get(0)));
-                        moves.put(keys_list_right.get(0), rec_trav_right.get(keys_list_right.get(0)));
+                        if (!keys_list.isEmpty())
+                        {
+                            moves.put(keys_list.get(0), rec_trav.get(keys_list.get(0)));
+                        }
+
+                        if (!keys_list_right.isEmpty())
+                        {
+                            moves.put(keys_list_right.get(0), rec_trav_right.get(keys_list_right.get(0)));
+                        }
                     }
                     break;
                 } else if (current.color == color) {
@@ -462,8 +497,15 @@ public class Board {
                         for (Vector2i x : keys_right)
                             keys_list_right.add(x);
 
-                        moves.put(keys_list.get(0), rec_trav.get(keys_list.get(0)));
-                        moves.put(keys_list_right.get(0), rec_trav_right.get(keys_list_right.get(0)));
+                        if (!keys_list.isEmpty())
+                        {
+                            moves.put(keys_list.get(0), rec_trav.get(keys_list.get(0)));
+                        }
+
+                        if (!keys_list_right.isEmpty())
+                        {
+                            moves.put(keys_list_right.get(0), rec_trav_right.get(keys_list_right.get(0)));
+                        }
                     }
                     break;
                 } else if (current.color == color) {
@@ -498,7 +540,5 @@ public class Board {
             turn = WHITE;
         }
     }
-
-
 
 }
