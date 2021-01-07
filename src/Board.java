@@ -1,6 +1,7 @@
 import javafx.beans.binding.When;
 
 import java.awt.*;
+import java.awt.image.ImageObserver;
 import java.security.PrivateKey;
 import java.util.*;
 import java.util.List;
@@ -20,7 +21,7 @@ public class Board {
     public int selected[] = new int[2];
     public boolean selection = false;
     private Color turn = WHITE;
-    private Map<Vector2i, List<Piece>> valid_moves = new HashMap<Vector2i, List<Piece>>();
+    private Map<Point, List<Piece>> valid_moves = new HashMap<Point, List<Piece>>();
 
     public Board() {
         selected[0] = 99;
@@ -35,15 +36,39 @@ public class Board {
     public void move_piece(Piece piece, int row, int col) {
         Piece temp;
         temp = piece;
-        board[piece.row][piece.col] = board[row][col];
-        board[row][col] = temp;
-        board[row][col].move(row, col);
-        if (row == 7 || row == 0) {
-            board[row][col].make_king();
-            if (board[row][col].color == WHITE) {
-                white_kings++;
-            } else {
-                black_kings++;
+        Set<Point> keys = valid_moves.keySet();
+        Point selected_pos = new Point(row, col);
+        for (Point x : keys)
+        {
+            if(x.equals(selected_pos))
+            {
+                board[piece.row][piece.col] = board[row][col];
+                board[row][col] = temp;
+                board[row][col].move(row, col);
+                if (row == 7 || row == 0) {
+                    board[row][col].make_king();
+                    if (board[row][col].color == WHITE) {
+                        white_kings++;
+                    } else if (board[row][col].color == BLACK){
+                        black_kings++;
+                    }
+                }
+
+
+                List <Piece> pieces_to_delete = valid_moves.get(new Point(row, col));
+                if (!pieces_to_delete.isEmpty())
+                {
+
+                    for (Piece to_delete : pieces_to_delete)
+                    {
+                        delete_piece(to_delete.row, to_delete.col);
+                    }
+                }
+
+                selected[0] = 99;
+                switch_turn();
+                selection = false;
+                valid_moves = new HashMap<Point, List<Piece>>();
             }
         }
     }
@@ -110,29 +135,31 @@ public class Board {
     }
 
 
-    //TODO: Very poor design for this function
     public void select(Graphics2D g, int x_coord, int y_coord) {
-
+        if (board[y_coord / 100][x_coord / 100].color != turn)
+        {
+            return;
+        }
         if (!board[y_coord / 100][x_coord / 100].is_fake) {
             selection = true;
             selected[0] = x_coord / 100;
             selected[1] = y_coord / 100;
             valid_moves = get_valid_moves(board[y_coord / 100][x_coord / 100]);
+
         }
     }
 
 
     private void draw_selected(Graphics2D g)
     {
-        Set<Vector2i> keys = valid_moves.keySet();
+        Set<Point> keys = valid_moves.keySet();
         int n = keys.size();
-        List<Vector2i> keys_list = new ArrayList<Vector2i>(n);
-        for (Vector2i x : keys)
+        List<Point> keys_list = new ArrayList<Point>(n);
+        for (Point x : keys)
             keys_list.add(x);
 
         g.setColor(RED);
-        for (Vector2i move: keys_list) {
-            System.out.println(move.x + " " + move.y + "\n");
+        for (Point move: keys_list) {
             g.fillOval(move.y * 100 + 40, move.x * 100 + 40, 20, 20);
         }
 
@@ -161,29 +188,28 @@ public class Board {
     }
 
 
-    public Map<Vector2i, List<Piece>> get_valid_moves(Piece piece) {
-        Map<Vector2i, List<Piece>> moves = new HashMap<Vector2i, List<Piece>>();
-        valid_moves = new HashMap<Vector2i, List<Piece>>();
+    public Map<Point, List<Piece>> get_valid_moves(Piece piece) {
+        Map<Point, List<Piece>> moves = new HashMap<Point, List<Piece>>();
+        valid_moves = new HashMap<Point, List<Piece>>();
 
         int left = piece.col - 1;
         int right = piece.col + 1;
         int row = piece.row;
-        System.out.println(piece.row);
 
         if (piece.color == BLACK || piece.is_king) {
             List<Piece> temp = new ArrayList<>();
-            Map<Vector2i, List<Piece>> rec_trav = traverse_left(row - 1, Math.max(row - 3, -1), -1, piece.color, left, temp);
-            Set<Vector2i> keys = rec_trav.keySet();
+            Map<Point, List<Piece>> rec_trav = traverse_left(row - 1, Math.max(row - 3, -1), -1, piece.color, left, temp);
+            Set<Point> keys = rec_trav.keySet();
             int n = keys.size();
-            List<Vector2i> keys_list = new ArrayList<Vector2i>(n);
-            for (Vector2i x : keys)
+            List<Point> keys_list = new ArrayList<Point>(n);
+            for (Point x : keys)
                 keys_list.add(x);
 
-            Map<Vector2i, List<Piece>> rec_trav_right = traverse_right(row - 1, Math.max(row - 3, -1), -1, piece.color, right, temp);
-            Set<Vector2i> keys_right = rec_trav_right.keySet();
+            Map<Point, List<Piece>> rec_trav_right = traverse_right(row - 1, Math.max(row - 3, -1), -1, piece.color, right, temp);
+            Set<Point> keys_right = rec_trav_right.keySet();
             int n_right = keys_right.size();
-            List<Vector2i> keys_list_right = new ArrayList<Vector2i>(n_right);
-            for (Vector2i x : keys_right)
+            List<Point> keys_list_right = new ArrayList<Point>(n_right);
+            for (Point x : keys_right)
                 keys_list_right.add(x);
 
             if (!keys_list.isEmpty())
@@ -199,18 +225,18 @@ public class Board {
 
         if (piece.color == WHITE || piece.is_king) {
             List<Piece> temp = new ArrayList<>();
-            Map<Vector2i, List<Piece>> rec_trav = traverse_left(row + 1, Math.min(row + 3, 8), 1, piece.color, left, temp);
-            Set<Vector2i> keys = rec_trav.keySet();
+            Map<Point, List<Piece>> rec_trav = traverse_left(row + 1, Math.min(row + 3, 8), 1, piece.color, left, temp);
+            Set<Point> keys = rec_trav.keySet();
             int n = keys.size();
-            List<Vector2i> keys_list = new ArrayList<Vector2i>(n);
-            for (Vector2i x : keys)
+            List<Point> keys_list = new ArrayList<Point>(n);
+            for (Point x : keys)
                 keys_list.add(x);
 
-            Map<Vector2i, List<Piece>> rec_trav_right = traverse_right(row + 1, Math.min(row + 3, 8), 1, piece.color, right, temp);
-            Set<Vector2i> keys_right = rec_trav_right.keySet();
+            Map<Point, List<Piece>> rec_trav_right = traverse_right(row + 1, Math.min(row + 3, 8), 1, piece.color, right, temp);
+            Set<Point> keys_right = rec_trav_right.keySet();
             int n_right = keys_right.size();
-            List<Vector2i> keys_list_right = new ArrayList<Vector2i>(n_right);
-            for (Vector2i x : keys_right)
+            List<Point> keys_list_right = new ArrayList<Point>(n_right);
+            for (Point x : keys_right)
                 keys_list_right.add(x);
 
             if (!keys_list.isEmpty())
@@ -229,15 +255,20 @@ public class Board {
     }
 
 
-    private Map<Vector2i, List<Piece>> traverse_left(int start, int stop, int step, Color color, int left, List<Piece> skipped) {
-        Map<Vector2i, List<Piece>> moves = new HashMap<Vector2i, List<Piece>>();
+    private Map<Point, List<Piece>> traverse_left(int start, int stop, int step, Color color, int left, List<Piece> skipped) {
+        Map<Point, List<Piece>> moves = new HashMap<Point, List<Piece>>();
         List<Piece> last = new ArrayList<>();
 
 
         if (step == -1)
         {
-            for (int i = start; i > stop; i += step) {
+
+            for (int i = start; i >= stop; i += step) {
                 if (left < 0) {
+                    break;
+                }
+                if (i < 0 || i > 7)
+                {
                     break;
                 }
 
@@ -250,11 +281,11 @@ public class Board {
                         List<Piece> temp = new ArrayList<>();
                         temp.addAll(last);
                         temp.addAll(skipped);
-                        moves.put(new Vector2i(i, left), temp);
+                        moves.put(new Point(i, left), temp);
                     } else {
                         List<Piece> temp = new ArrayList<>();
                         temp.addAll(last);
-                        moves.put(new Vector2i(i, left), temp);
+                        moves.put(new Point(i, left), temp);
                     }
 
                     if (!last.isEmpty()) {
@@ -267,24 +298,26 @@ public class Board {
                         List<Piece> temp = new ArrayList<>();
                         temp.addAll(last);
 
-                        Map<Vector2i, List<Piece>> rec_trav = traverse_left(i + step, row, step, color, left - 1, temp);
-                        Set<Vector2i> keys = rec_trav.keySet();
+                        Map<Point, List<Piece>> rec_trav = traverse_left(i + step, row, step, color, left - 1, temp);
+                        Set<Point> keys = rec_trav.keySet();
                         int n = keys.size();
-                        List<Vector2i> keys_list = new ArrayList<Vector2i>(n);
-                        for (Vector2i x : keys)
+                        List<Point> keys_list = new ArrayList<Point>(n);
+                        for (Point x : keys)
                             keys_list.add(x);
-
-                        Map<Vector2i, List<Piece>> rec_trav_right = traverse_right(i + step, row, step, color, left + 1, temp);
-                        Set<Vector2i> keys_right = rec_trav_right.keySet();
-                        int n_right = keys_right.size();
-                        List<Vector2i> keys_list_right = new ArrayList<Vector2i>(n_right);
-                        for (Vector2i x : keys_right)
-                            keys_list_right.add(x);
 
                         if (!keys_list.isEmpty())
                         {
                             moves.put(keys_list.get(0), rec_trav.get(keys_list.get(0)));
                         }
+
+                        Map<Point, List<Piece>> rec_trav_right = traverse_right(i + step, row, step, color, left + 1, temp);
+                        Set<Point> keys_right = rec_trav_right.keySet();
+                        int n_right = keys_right.size();
+                        List<Point> keys_list_right = new ArrayList<Point>(n_right);
+                        for (Point x : keys_right)
+                            keys_list_right.add(x);
+
+
 
                         if (!keys_list_right.isEmpty())
                         {
@@ -302,14 +335,18 @@ public class Board {
 
                 left--;
             }
+
         }
         else
         {
-            for (int i = start; i < stop; i += step) {
+            for (int i = start; i <= stop; i += step) {
                 if (left < 0) {
                     break;
                 }
-
+                if (i < 0 || i > 7)
+                {
+                    break;
+                }
                 Piece current = board[i][left];
 
                 if (current.is_fake) {
@@ -319,11 +356,11 @@ public class Board {
                         List<Piece> temp = new ArrayList<>();
                         temp.addAll(last);
                         temp.addAll(skipped);
-                        moves.put(new Vector2i(i, left), temp);
+                        moves.put(new Point(i, left), temp);
                     } else {
                         List<Piece> temp = new ArrayList<>();
                         temp.addAll(last);
-                        moves.put(new Vector2i(i, left), temp);
+                        moves.put(new Point(i, left), temp);
                     }
 
                     if (!last.isEmpty()) {
@@ -336,24 +373,25 @@ public class Board {
                         List<Piece> temp = new ArrayList<>();
                         temp.addAll(last);
 
-                        Map<Vector2i, List<Piece>> rec_trav = traverse_left(i + step, row, step, color, left - 1, temp);
-                        Set<Vector2i> keys = rec_trav.keySet();
+                        Map<Point, List<Piece>> rec_trav = traverse_left(i + step, row, step, color, left - 1, temp);
+                        Set<Point> keys = rec_trav.keySet();
                         int n = keys.size();
-                        List<Vector2i> keys_list = new ArrayList<Vector2i>(n);
-                        for (Vector2i x : keys)
+                        List<Point> keys_list = new ArrayList<Point>(n);
+                        for (Point x : keys)
                             keys_list.add(x);
-
-                        Map<Vector2i, List<Piece>> rec_trav_right = traverse_right(i + step, row, step, color, left + 1, temp);
-                        Set<Vector2i> keys_right = rec_trav_right.keySet();
-                        int n_right = keys_right.size();
-                        List<Vector2i> keys_list_right = new ArrayList<Vector2i>(n_right);
-                        for (Vector2i x : keys_right)
-                            keys_list_right.add(x);
-
                         if (!keys_list.isEmpty())
                         {
                             moves.put(keys_list.get(0), rec_trav.get(keys_list.get(0)));
                         }
+
+                        Map<Point, List<Piece>> rec_trav_right = traverse_right(i + step, row, step, color, left + 1, temp);
+                        Set<Point> keys_right = rec_trav_right.keySet();
+                        int n_right = keys_right.size();
+                        List<Point> keys_list_right = new ArrayList<Point>(n_right);
+                        for (Point x : keys_right)
+                            keys_list_right.add(x);
+
+
 
                         if (!keys_list_right.isEmpty())
                         {
@@ -371,20 +409,24 @@ public class Board {
 
                 left--;
             }
-        }
 
+        }
         return moves;
     }
 
 
-    private Map<Vector2i, List<Piece>> traverse_right(int start, int stop, int step, Color color, int right, List<Piece> skipped) {
-        Map<Vector2i, List<Piece>> moves = new HashMap<Vector2i, List<Piece>>();
+    private Map<Point, List<Piece>> traverse_right(int start, int stop, int step, Color color, int right, List<Piece> skipped) {
+        Map<Point, List<Piece>> moves = new HashMap<Point, List<Piece>>();
         List<Piece> last = new ArrayList<>();
 
         if (step == -1)
         {
-            for (int i = start; i > stop; i += step) {
+            for (int i = start; i >= stop; i += step) {
                 if (right > 7) {
+                    break;
+                }
+                if (i < 0 || i > 7)
+                {
                     break;
                 }
 
@@ -397,11 +439,11 @@ public class Board {
                         List<Piece> temp = new ArrayList<>();
                         temp.addAll(last);
                         temp.addAll(skipped);
-                        moves.put(new Vector2i(i, right), temp);
+                        moves.put(new Point(i, right), temp);
                     } else {
                         List<Piece> temp = new ArrayList<>();
                         temp.addAll(last);
-                        moves.put(new Vector2i(i, right), temp);
+                        moves.put(new Point(i, right), temp);
                     }
 
                     if (!last.isEmpty()) {
@@ -414,24 +456,25 @@ public class Board {
                         List<Piece> temp = new ArrayList<>();
                         temp.addAll(last);
 
-                        Map<Vector2i, List<Piece>> rec_trav = traverse_left(i + step, row, step, color, right - 1, temp);
-                        Set<Vector2i> keys = rec_trav.keySet();
+                        Map<Point, List<Piece>> rec_trav = traverse_left(i + step, row, step, color, right - 1, temp);
+                        Set<Point> keys = rec_trav.keySet();
                         int n = keys.size();
-                        List<Vector2i> keys_list = new ArrayList<Vector2i>(n);
-                        for (Vector2i x : keys)
+                        List<Point> keys_list = new ArrayList<Point>(n);
+                        for (Point x : keys)
                             keys_list.add(x);
-
-                        Map<Vector2i, List<Piece>> rec_trav_right = traverse_right(i + step, row, step, color, right + 1, temp);
-                        Set<Vector2i> keys_right = rec_trav.keySet();
-                        int n_right = keys_right.size();
-                        List<Vector2i> keys_list_right = new ArrayList<Vector2i>(n);
-                        for (Vector2i x : keys_right)
-                            keys_list_right.add(x);
-
                         if (!keys_list.isEmpty())
                         {
                             moves.put(keys_list.get(0), rec_trav.get(keys_list.get(0)));
                         }
+
+                        Map<Point, List<Piece>> rec_trav_right = traverse_right(i + step, row, step, color, right + 1, temp);
+                        Set<Point> keys_right = rec_trav.keySet();
+                        int n_right = keys_right.size();
+                        List<Point> keys_list_right = new ArrayList<Point>(n_right);
+                        for (Point x : keys_right)
+                            keys_list_right.add(x);
+
+
 
                         if (!keys_list_right.isEmpty())
                         {
@@ -452,8 +495,12 @@ public class Board {
         }
         else
         {
-            for (int i = start; i < stop; i += step) {
+            for (int i = start; i <= stop; i += step) {
                 if (right > 7) {
+                    break;
+                }
+                if (i < 0 || i > 7)
+                {
                     break;
                 }
 
@@ -466,11 +513,11 @@ public class Board {
                         List<Piece> temp = new ArrayList<>();
                         temp.addAll(last);
                         temp.addAll(skipped);
-                        moves.put(new Vector2i(i, right), temp);
+                        moves.put(new Point(i, right), temp);
                     } else {
                         List<Piece> temp = new ArrayList<>();
                         temp.addAll(last);
-                        moves.put(new Vector2i(i, right), temp);
+                        moves.put(new Point(i, right), temp);
                     }
 
                     if (!last.isEmpty()) {
@@ -483,24 +530,26 @@ public class Board {
                         List<Piece> temp = new ArrayList<>();
                         temp.addAll(last);
 
-                        Map<Vector2i, List<Piece>> rec_trav = traverse_left(i + step, row, step, color, right - 1, temp);
-                        Set<Vector2i> keys = rec_trav.keySet();
+                        Map<Point, List<Piece>> rec_trav = traverse_left(i + step, row, step, color, right - 1, temp);
+                        Set<Point> keys = rec_trav.keySet();
                         int n = keys.size();
-                        List<Vector2i> keys_list = new ArrayList<Vector2i>(n);
-                        for (Vector2i x : keys)
+                        List<Point> keys_list = new ArrayList<Point>(n);
+                        for (Point x : keys)
                             keys_list.add(x);
-
-                        Map<Vector2i, List<Piece>> rec_trav_right = traverse_right(i + step, row, step, color, right + 1, temp);
-                        Set<Vector2i> keys_right = rec_trav.keySet();
-                        int n_right = keys_right.size();
-                        List<Vector2i> keys_list_right = new ArrayList<Vector2i>(n);
-                        for (Vector2i x : keys_right)
-                            keys_list_right.add(x);
 
                         if (!keys_list.isEmpty())
                         {
                             moves.put(keys_list.get(0), rec_trav.get(keys_list.get(0)));
                         }
+
+                        Map<Point, List<Piece>> rec_trav_right = traverse_right(i + step, row, step, color, right + 1, temp);
+                        Set<Point> keys_right = rec_trav.keySet();
+                        int n_right = keys_right.size();
+                        List<Point> keys_list_right = new ArrayList<Point>(n_right);
+                        for (Point x : keys_right)
+                            keys_list_right.add(x);
+
+
 
                         if (!keys_list_right.isEmpty())
                         {
@@ -515,9 +564,9 @@ public class Board {
                     temp.add(current);
                     last = temp;
                 }
-
                 right++;
             }
+
         }
 
         return moves;
@@ -526,6 +575,14 @@ public class Board {
 
     private void delete_piece(int x, int y)
     {
+        if(board[x][y].color == WHITE)
+        {
+            white_left--;
+        }
+        else if(board[x][y].color == BLACK)
+        {
+            black_left--;
+        }
         board[x][y] = new Piece(true);
     }
 

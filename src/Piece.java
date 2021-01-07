@@ -1,4 +1,8 @@
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 public class Piece {
     public int row;
@@ -8,6 +12,7 @@ public class Piece {
     private int y = 0;
     public boolean is_king = false;
     public boolean is_fake = false;
+    private BufferedImage crown;
 
 
     public Piece(int _row, int _col, Color _color)
@@ -40,12 +45,26 @@ public class Piece {
         col = _col;
     }
 
+    private void load_crown()
+    {
+        //TODO: Load image and display in draw function when the piece is king
+    }
 
     public void draw(Graphics2D g)
     {
-        g.setColor(color);
-        calculate_pos();
-        g.fillOval(x, y, 80, 80);
+        if (is_king)
+        {
+            g.setColor(color);
+            calculate_pos();
+            g.fillOval(x, y, 80, 80);
+
+        }
+        else {
+            load_crown();
+            g.setColor(color);
+            calculate_pos();
+            g.fillOval(x, y, 80, 80);
+        }
     }
 
 
