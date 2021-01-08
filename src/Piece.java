@@ -12,7 +12,6 @@ public class Piece {
     private int y = 0;
     public boolean is_king = false;
     public boolean is_fake = false;
-    private BufferedImage crown;
 
 
     public Piece(int _row, int _col, Color _color)
@@ -45,14 +44,10 @@ public class Piece {
         col = _col;
     }
 
-    private void load_crown()
-    {
-        //TODO: Load image and display in draw function when the piece is king
-    }
 
     public void draw(Graphics2D g)
     {
-        if (is_king)
+        if (!is_king)
         {
             g.setColor(color);
             calculate_pos();
@@ -60,12 +55,12 @@ public class Piece {
 
         }
         else {
-            load_crown();
             g.setColor(color);
             calculate_pos();
             g.fillOval(x, y, 80, 80);
+            g.setColor(Color.ORANGE);
+            g.setFont(new Font("Arial Unicode MS", Font.PLAIN, 36));
+            g.drawString("\uD83D\uDC51", x+22, y+50);
         }
     }
-
-
 }
