@@ -21,13 +21,12 @@ public class GamePanel extends JPanel implements Runnable {
 
     private Board board;
 
-    private int  mouse_x;
-    private int  mouse_y;
+    private int mouse_x;
+    private int mouse_y;
 
     private Color GREY = new Color(125, 83, 36);
 
-    public GamePanel()
-    {
+    public GamePanel() {
         super();
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setFocusable(true);
@@ -40,19 +39,13 @@ public class GamePanel extends JPanel implements Runnable {
                 mouse_y = e.getY();
 
                 if (board.selected[0] == 99) {
-                    if (!board.get_piece(mouse_x / 100, mouse_y / 100).is_fake)
-                    {
+                    if (!board.get_piece(mouse_x / 100, mouse_y / 100).is_fake) {
                         board.select(g, mouse_x, mouse_y);
                     }
-                }
-                else
-                {
-                    if(!board.is_ocupied(mouse_x, mouse_y))
-                    {
+                } else {
+                    if (!board.is_ocupied(mouse_x, mouse_y)) {
                         board.move_piece(board.get_piece(board.selected[0], board.selected[1]), mouse_y / 100, mouse_x / 100);
-                    }
-                    else
-                    {
+                    } else {
                         board.select(g, mouse_x, mouse_y);
                     }
                 }
@@ -60,12 +53,10 @@ public class GamePanel extends JPanel implements Runnable {
         });
     }
 
-    public void addNotify()
-    {
+    public void addNotify() {
         super.addNotify();
 
-        if(thread == null)
-        {
+        if (thread == null) {
             thread = new Thread(this);
             thread.start();
         }
@@ -73,8 +64,7 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
 
-    public void run()
-    {
+    public void run() {
         running = true;
 
         image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
@@ -82,22 +72,8 @@ public class GamePanel extends JPanel implements Runnable {
 
         board = new Board();
 
-        while (running)
-        {
-            if (board.check_winner() != Color.GREEN)
-            {
-                g.setColor(Color.PINK);
-                if (board.check_winner() == Color.BLACK)
-                {
-                    g.drawString("You won.", 400, 400);
-                }
-                else if(board.check_winner() == Color.WHITE)
-                {
-                    g.drawString("You lost.", 400, 400);
-                }
+        while (running) {
 
-                running = false;
-            }
             gameUpdate();
             gameRender();
             gameDraw();
@@ -105,9 +81,22 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
 
-    private void gameUpdate()
+    private void gameUpdate() {
+        board.update(g);
+
+    }
+
+    private void show_winner()
     {
-        board.update();
+        if (board.check_winner() != Color.GREEN) {
+            g.setColor(Color.GREEN);
+            if (board.check_winner() == Color.BLACK) {
+                g.drawString("You won.", 400, 400);
+            } else if (board.check_winner() == Color.WHITE) {
+                g.drawString("You lost.", 400, 400);
+            }
+            running = false;
+        }
 
     }
 
@@ -118,7 +107,7 @@ public class GamePanel extends JPanel implements Runnable {
         g.fillRect(0, 0, WIDTH, HEIGHT);
         g.setColor(GREY);
         board.draw(g, WIDTH, HEIGHT);
-        g.drawString("Pls start working", 100, 100);
+        show_winner();
     }
 
 

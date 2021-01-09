@@ -29,8 +29,7 @@ public class Board {
         fill_board();
     }
 
-    public void update() {
-
+    public void update(Graphics2D g) {
     }
 
     public void move_piece(Piece piece, int row, int col) {
@@ -173,7 +172,7 @@ public class Board {
             return BLACK;
         } else {
             // TODO: Find a better way to say the game is not over
-            // Green means there we do not have a winner yet
+            // Green means that we do not have a winner yet
             return GREEN;
         }
     }
@@ -314,6 +313,14 @@ public class Board {
                 } else if (current.color == color) {
                     break;
                 } else {
+                    if (!last.isEmpty())
+                    {
+                        if (last.get(last.size() - 1).color == current.color)
+                        {
+                            break;
+                        }
+                    }
+
                     List<Piece> temp = new ArrayList<>();
                     temp.add(current);
                     last.addAll(temp);
@@ -384,6 +391,13 @@ public class Board {
                 } else if (current.color == color) {
                     break;
                 } else {
+                    if (!last.isEmpty())
+                    {
+                        if (last.get(last.size() - 1).color == current.color)
+                        {
+                            break;
+                        }
+                    }
                     List<Piece> temp = new ArrayList<>();
                     temp.add(current);
                     last.addAll(temp);
@@ -462,6 +476,13 @@ public class Board {
                 } else if (current.color == color) {
                     break;
                 } else {
+                    if (!last.isEmpty())
+                    {
+                        if (last.get(last.size() - 1).color == current.color)
+                        {
+                            break;
+                        }
+                    }
                     List<Piece> temp = new ArrayList<>();
                     temp.add(current);
                     last.addAll(temp);
@@ -531,6 +552,13 @@ public class Board {
                 } else if (current.color == color) {
                     break;
                 } else {
+                    if (!last.isEmpty())
+                    {
+                        if (last.get(last.size() - 1).color == current.color)
+                        {
+                            break;
+                        }
+                    }
                     List<Piece> temp = new ArrayList<>();
                     temp.add(current);
                     last.addAll(temp);
