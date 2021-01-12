@@ -7,6 +7,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.image.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class GamePanel extends JPanel implements Runnable {
 
@@ -47,6 +48,7 @@ public class GamePanel extends JPanel implements Runnable {
                 } else {
                     if (!board.is_ocupied(mouse_x, mouse_y)) {
                         board.move_piece(board.get_piece(board.selected[0], board.selected[1]), mouse_y / 100, mouse_x / 100);
+                        System.out.println("Turn made by you.");
                     } else {
                         board.select(g, mouse_x, mouse_y);
                     }
@@ -83,9 +85,13 @@ public class GamePanel extends JPanel implements Runnable {
                 {
                     key = x;
                 }
-                System.out.println(key);
-                System.out.println(best_move.get(key).get_game_value());
                 minimax_move(best_move.get(key));
+                System.out.println("Turn made by ai.");
+                try {
+                    TimeUnit.MILLISECONDS.sleep(200);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
             gameUpdate();
             gameRender();
@@ -96,7 +102,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     private void minimax_move(Board new_board)
     {
-        board = new Board(new_board); 
+        board = new Board(new_board);
     }
 
 
@@ -110,9 +116,9 @@ public class GamePanel extends JPanel implements Runnable {
         if (board.check_winner() != Color.GREEN) {
             g.setColor(Color.GREEN);
             if (board.check_winner() == Color.BLACK) {
-                g.drawString("You won.", 400, 400);
-            } else if (board.check_winner() == Color.WHITE) {
                 g.drawString("You lost.", 400, 400);
+            } else if (board.check_winner() == Color.WHITE) {
+                g.drawString("You won.", 400, 400);
             }
             running = false;
         }

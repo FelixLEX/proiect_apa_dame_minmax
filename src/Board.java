@@ -15,12 +15,12 @@ public class Board {
     private Color BEIGE = new Color(199, 171, 127);
     private int white_left = 12;
     private int black_left = 12;
-    private int white_kings = 0;
+    public int white_kings = 0;
     private int black_kings = 0;
     private Piece[][] board = new Piece[8][8];
     public int selected[] = new int[2];
     public boolean selection = false;
-    public Color turn = WHITE;
+    public Color turn = BLACK;
     public Map<Point, List<Piece>> valid_moves = new HashMap<Point, List<Piece>>();
 
     public Board() {
@@ -41,16 +41,14 @@ public class Board {
         {
             for (int j = 0; j < 8; j++)
             {
-                board[i][j] = other.board[i][j];
+                board[i][j] = new Piece(other.board[i][j]);
             }
         }
-
-        selected[0] = other.selected[0];
-        selected[1] = other.selected[1];
+        selection = false;
+        selected[0] = 99;
+        selected[1] = 99;
 
         turn = other.turn;
-
-        valid_moves = other.valid_moves;
     }
 
     public void update(Graphics2D g) {
@@ -70,11 +68,13 @@ public class Board {
                 board[row][col] = temp;
                 board[row][col].move(row, col);
                 if (row == 7 || row == 0) {
-                    board[row][col].make_king();
-                    if (board[row][col].color == WHITE) {
-                        white_kings++;
-                    } else if (board[row][col].color == BLACK){
-                        black_kings++;
+                    if(!board[row][col].is_king) {
+                        board[row][col].make_king();
+                        if (board[row][col].color == WHITE) {
+                            white_kings++;
+                        } else if (board[row][col].color == BLACK) {
+                            black_kings++;
+                        }
                     }
                 }
 
@@ -92,7 +92,6 @@ public class Board {
                 switch_turn();
                 selection = false;
                 valid_moves = new HashMap<Point, List<Piece>>();
-                System.out.println("Moved to" + row + "  " + col);
             }
         }
     }
@@ -640,6 +639,8 @@ public class Board {
         {
             turn = WHITE;
         }
+
+
     }
 
 }
