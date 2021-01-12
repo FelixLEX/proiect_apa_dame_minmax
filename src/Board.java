@@ -20,13 +20,37 @@ public class Board {
     private Piece[][] board = new Piece[8][8];
     public int selected[] = new int[2];
     public boolean selection = false;
-    private Color turn = WHITE;
-    private Map<Point, List<Piece>> valid_moves = new HashMap<Point, List<Piece>>();
+    public Color turn = WHITE;
+    public Map<Point, List<Piece>> valid_moves = new HashMap<Point, List<Piece>>();
 
     public Board() {
         selected[0] = 99;
         selected[1] = 99;
         fill_board();
+    }
+
+    public Board(Board other)
+    {
+        white_left = other.white_left;
+        black_left = other.black_left;
+        white_kings = other.white_kings;
+        black_kings = other.black_kings;
+        board = new Piece[8][8];
+
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                board[i][j] = other.board[i][j];
+            }
+        }
+
+        selected[0] = other.selected[0];
+        selected[1] = other.selected[1];
+
+        turn = other.turn;
+
+        valid_moves = other.valid_moves;
     }
 
     public void update(Graphics2D g) {
@@ -35,6 +59,7 @@ public class Board {
     public void move_piece(Piece piece, int row, int col) {
         Piece temp;
         temp = piece;
+        valid_moves = get_valid_moves(piece);
         Set<Point> keys = valid_moves.keySet();
         Point selected_pos = new Point(row, col);
         for (Point x : keys)
@@ -57,7 +82,6 @@ public class Board {
                 List <Piece> pieces_to_delete = valid_moves.get(new Point(row, col));
                 if (!pieces_to_delete.isEmpty())
                 {
-
                     for (Piece to_delete : pieces_to_delete)
                     {
                         delete_piece(to_delete.row, to_delete.col);
@@ -68,6 +92,7 @@ public class Board {
                 switch_turn();
                 selection = false;
                 valid_moves = new HashMap<Point, List<Piece>>();
+                System.out.println("Moved to" + row + "  " + col);
             }
         }
     }
@@ -76,6 +101,23 @@ public class Board {
         return board[y][x];
     }
 
+
+    public List<Piece> get_all_pieces(Color color)
+    {
+        List<Piece> pieces = new ArrayList<>();
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                if (!board[i][j].is_fake && board[i][j].color == color)
+                {
+                    pieces.add(new Piece(board[i][j]));
+                }
+            }
+        }
+
+        return pieces;
+    }
 
     public void draw(Graphics2D g, int window_width, int window_height) {
         draw_squares(g, window_width, window_height);
@@ -97,7 +139,7 @@ public class Board {
     }
 
 
-    private void fill_board() {
+    public void fill_board() {
 
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
@@ -116,17 +158,22 @@ public class Board {
         }
     }
 
+    public float get_game_value()
+    {
+        return (float) (white_left - black_left + (white_kings * 0.5 - black_kings * 0.5));
+    }
 
-    public void draw_squares(Graphics2D g, int window_width, int windhow_height) {
-        for (int y = 0; y < windhow_height; y += 200) {
+
+    public void draw_squares(Graphics2D g, int window_width, int window_height) {
+        for (int y = 0; y < window_height; y += 200) {
             for (int x = 0; x < window_width; x += 200) {
                 g.setColor(BEIGE);
                 g.fillRect(x, y, 100, 100);
             }
         }
 
-        for (int y = 100; y < windhow_height; y += 200) {
-            for (int x = 100; x < windhow_height; x += 200) {
+        for (int y = 100; y < window_height; y += 200) {
+            for (int x = 100; x < window_height; x += 200) {
                 g.setColor(BEIGE);
                 g.fillRect(x, y, 100, 100);
             }
@@ -565,14 +612,12 @@ public class Board {
                 }
                 right++;
             }
-
         }
-
         return moves;
     }
 
 
-    private void delete_piece(int x, int y)
+    public void delete_piece(int x, int y)
     {
         if(board[x][y].color == WHITE)
         {
@@ -585,7 +630,7 @@ public class Board {
         board[x][y] = new Piece(true);
     }
 
-    private void switch_turn()
+    public void switch_turn()
     {
         if(turn == WHITE)
         {

@@ -24,14 +24,16 @@ public class GamePanel extends JPanel implements Runnable {
     private int mouse_x;
     private int mouse_y;
 
+    private Minimax minimax;
+
     private Color GREY = new Color(125, 83, 36);
 
     public GamePanel() {
+
         super();
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setFocusable(true);
         requestFocus();
-
 
         addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
@@ -71,13 +73,30 @@ public class GamePanel extends JPanel implements Runnable {
         g = (Graphics2D) image.getGraphics();
 
         board = new Board();
-
+        minimax = new Minimax();
         while (running) {
-
+            if(board.turn == Color.WHITE)
+            {
+                Map<Float, Board> best_move = minimax.algorithm(board,5,true);
+                float key = 0;
+                for(float x : best_move.keySet())
+                {
+                    key = x;
+                }
+                System.out.println(key);
+                System.out.println(best_move.get(key).get_game_value());
+                minimax_move(best_move.get(key));
+            }
             gameUpdate();
             gameRender();
             gameDraw();
         }
+    }
+
+
+    private void minimax_move(Board new_board)
+    {
+        board = new Board(new_board); 
     }
 
 
@@ -117,6 +136,5 @@ public class GamePanel extends JPanel implements Runnable {
         g2.drawImage(image, 0, 0, null);
         g2.dispose();
     }
-
 
 }

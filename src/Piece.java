@@ -27,6 +27,19 @@ public class Piece {
         is_fake = fake;
     }
 
+
+    // Constructor to make deep copies
+    public Piece(Piece piece)
+    {
+        row = piece.row;
+        col = piece.col;
+        color = piece.color;
+        x = piece.x;
+        y = piece.y;
+        is_fake = piece.is_fake;
+        is_king = piece.is_king;
+    }
+
     public void make_king()
     {
         is_king = true;
