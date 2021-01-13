@@ -5,12 +5,13 @@ import java.util.Map;
 import java.util.List;
 
 public class Minimax {
-    public Map<Float, Board> algorithm(Board board_state, int depth, boolean max_player)
+    public Map<Float, Board> algorithm(Board board_state, int depth, float alpha, float beta, boolean max_player)
     {
         Map<Float, Board> best = new HashMap<>();
 
         if (depth == 0 || board_state.check_winner() != Color.GREEN)
         {
+            System.out.println("Retrurned branch value " + board_state.get_game_value());
             best.put(board_state.get_game_value(), board_state);
             return best;
         }
@@ -23,7 +24,7 @@ public class Minimax {
             Board temp_best_board = new Board();
             for (Board state : get_all_moves(new Board(board_state), Color.WHITE))
             {
-                score.putAll(algorithm(state, depth -1, false));
+                score.putAll(algorithm(state, depth -1, alpha, beta, false));
                 for (Float key : score.keySet())
                 {
                     eval = key;
@@ -33,6 +34,11 @@ public class Minimax {
                 if (max_eval == eval)
                 {
                     temp_best_board = new Board(state);
+                }
+                alpha = Math.max(alpha, max_eval);
+                if (beta <= alpha)
+                {
+                    break;
                 }
             }
             score = new HashMap<>();
@@ -47,7 +53,7 @@ public class Minimax {
             Board temp_best_board = new Board();
             for (Board state : get_all_moves(new Board(board_state), Color.BLACK))
             {
-                score.putAll(algorithm(state, depth -1, true));
+                score.putAll(algorithm(state, depth -1, alpha, beta, true));
                 for (Float key : score.keySet())
                 {
                     eval = key;
@@ -57,6 +63,11 @@ public class Minimax {
                 if (min_eval == eval)
                 {
                     temp_best_board = new Board(state);
+                }
+                beta = Math.min(beta, min_eval);
+                if (beta <= alpha)
+                {
+                    break;
                 }
             }
             score = new HashMap<>();

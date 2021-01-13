@@ -79,14 +79,16 @@ public class GamePanel extends JPanel implements Runnable {
         while (running) {
             if(board.turn == Color.WHITE)
             {
-                Map<Float, Board> best_move = minimax.algorithm(board,5,true);
+                Map<Float, Board> best_move = minimax.algorithm(board,8,-999999, 999999, true);
                 float key = 0;
                 for(float x : best_move.keySet())
                 {
                     key = x;
                 }
                 minimax_move(best_move.get(key));
-                System.out.println("Turn made by ai.");
+                System.out.println("Turn made by ai with value" + key);
+                System.out.println("Black left " + board.black_left);
+                System.out.println("White kings " + board.white_kings);
                 try {
                     TimeUnit.MILLISECONDS.sleep(200);
                 } catch (InterruptedException e) {

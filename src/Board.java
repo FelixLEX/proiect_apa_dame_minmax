@@ -14,7 +14,7 @@ public class Board {
     // Board colors: beige and the default black
     private Color BEIGE = new Color(199, 171, 127);
     private int white_left = 12;
-    private int black_left = 12;
+    public int black_left = 12;
     public int white_kings = 0;
     private int black_kings = 0;
     private Piece[][] board = new Piece[8][8];
@@ -160,6 +160,7 @@ public class Board {
     public float get_game_value()
     {
         return (float) (white_left - black_left + (white_kings * 0.5 - black_kings * 0.5));
+//        return (float) (white_left - black_left);
     }
 
 
@@ -621,10 +622,18 @@ public class Board {
         if(board[x][y].color == WHITE)
         {
             white_left--;
+            if (board[x][y].is_king)
+            {
+                white_kings--;
+            }
         }
         else if(board[x][y].color == BLACK)
         {
             black_left--;
+            if (board[x][y].is_king)
+            {
+                black_kings--;
+            }
         }
         board[x][y] = new Piece(true);
     }
