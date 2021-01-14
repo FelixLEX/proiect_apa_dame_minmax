@@ -81,11 +81,7 @@ public class GamePanel extends JPanel implements Runnable {
         while (running) {
             if(board.turn == Color.WHITE)
             {
-<<<<<<< Updated upstream
                 Map<Float, Board> best_move = minimax.algorithm(board,6,-999999, 999999, true);
-=======
-                Map<Float, Board> best_move = minimax.algorithm(board,9,-999999, 999999, true);
->>>>>>> Stashed changes
                 float key = 0;
                 for(float x : best_move.keySet())
                 {

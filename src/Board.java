@@ -156,11 +156,7 @@ public class Board {
 
     public float get_game_value()
     {
-<<<<<<< Updated upstream
-        return (float) (white_left - black_left + (white_kings * 0.5 - black_kings * 0.5));
-=======
         return (float) ((white_left - black_left) + (white_kings * 0.5 - black_kings * 0.5));
-//        return (float) (white_left - black_left);
 >>>>>>> Stashed changes
     }
 
