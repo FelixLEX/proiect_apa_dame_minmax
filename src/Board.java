@@ -1,11 +1,6 @@
-import javafx.beans.binding.When;
-
 import java.awt.*;
-import java.awt.image.ImageObserver;
-import java.security.PrivateKey;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.BlockingDeque;
 
 import static java.awt.Color.*;
 
@@ -160,7 +155,6 @@ public class Board {
     public float get_game_value()
     {
         return (float) (white_left - black_left + (white_kings * 0.5 - black_kings * 0.5));
-//        return (float) (white_left - black_left);
     }
 
 
@@ -218,8 +212,6 @@ public class Board {
         } else if (black_left == 0) {
             return BLACK;
         } else {
-            // TODO: Find a better way to say the game is not over
-            // Green means that we do not have a winner yet
             return GREEN;
         }
     }

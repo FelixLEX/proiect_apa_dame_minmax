@@ -1,6 +1,4 @@
-
 import javax.swing.JFrame;
-
 
 public class Game {
     public static void main(String[] args)
@@ -8,10 +6,10 @@ public class Game {
         JFrame window = new JFrame("Checkers");
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+        window.setResizable(false);
         window.setContentPane(new GamePanel());
 
         window.pack();
         window.setVisible(true);
     }
-
 }

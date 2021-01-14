@@ -11,7 +11,7 @@ public class Minimax {
 
         if (depth == 0 || board_state.check_winner() != Color.GREEN)
         {
-            System.out.println("Retrurned branch value " + board_state.get_game_value());
+            System.out.println("Returned branch value " + board_state.get_game_value());
             best.put(board_state.get_game_value(), board_state);
             return best;
         }

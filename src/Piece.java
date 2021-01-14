@@ -1,8 +1,4 @@
-import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
 public class Piece {
     public int row;
@@ -72,8 +68,8 @@ public class Piece {
             calculate_pos();
             g.fillOval(x, y, 80, 80);
             g.setColor(Color.ORANGE);
-            g.setFont(new Font("Arial Unicode MS", Font.PLAIN, 36));
-            g.drawString("\uD83D\uDC51", x+22, y+50);
+            g.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 30));
+            g.drawString("\uD83D\uDC51", x+21, y+50);
         }
     }
 }

@@ -1,11 +1,8 @@
-import com.sun.xml.internal.ws.api.ha.StickyFeature;
-
 import javax.swing.JPanel;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.image.*;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -79,7 +76,7 @@ public class GamePanel extends JPanel implements Runnable {
         while (running) {
             if(board.turn == Color.WHITE)
             {
-                Map<Float, Board> best_move = minimax.algorithm(board,8,-999999, 999999, true);
+                Map<Float, Board> best_move = minimax.algorithm(board,6,-999999, 999999, true);
                 float key = 0;
                 for(float x : best_move.keySet())
                 {
@@ -118,9 +115,9 @@ public class GamePanel extends JPanel implements Runnable {
         if (board.check_winner() != Color.GREEN) {
             g.setColor(Color.GREEN);
             if (board.check_winner() == Color.BLACK) {
-                g.drawString("You lost.", 400, 400);
+                g.drawString("You lost.", 350, 400);
             } else if (board.check_winner() == Color.WHITE) {
-                g.drawString("You won.", 400, 400);
+                g.drawString("You won.", 350, 400);
             }
             running = false;
         }
