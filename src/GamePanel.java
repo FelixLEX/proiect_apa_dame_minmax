@@ -38,16 +38,21 @@ public class GamePanel extends JPanel implements Runnable {
                 mouse_x = e.getX();
                 mouse_y = e.getY();
 
+
                 if (board.selected[0] == 99) {
-                    if (!board.get_piece(mouse_x / 100, mouse_y / 100).is_fake) {
-                        board.select(g, mouse_x, mouse_y);
+                    if (board.available_to_move(board.get_piece(mouse_x / 100, mouse_y / 100))) {
+                        if (!board.get_piece(mouse_x / 100, mouse_y / 100).is_fake) {
+                            board.select(g, mouse_x, mouse_y);
+                        }
                     }
                 } else {
                     if (!board.is_ocupied(mouse_x, mouse_y)) {
                         board.move_piece(board.get_piece(board.selected[0], board.selected[1]), mouse_y / 100, mouse_x / 100);
                         System.out.println("Turn made by you.");
                     } else {
-                        board.select(g, mouse_x, mouse_y);
+                        if (board.available_to_move(board.get_piece(mouse_x / 100, mouse_y / 100))) {
+                            board.select(g, mouse_x, mouse_y);
+                        }
                     }
                 }
             }
@@ -76,7 +81,11 @@ public class GamePanel extends JPanel implements Runnable {
         while (running) {
             if(board.turn == Color.WHITE)
             {
+<<<<<<< Updated upstream
                 Map<Float, Board> best_move = minimax.algorithm(board,6,-999999, 999999, true);
+=======
+                Map<Float, Board> best_move = minimax.algorithm(board,9,-999999, 999999, true);
+>>>>>>> Stashed changes
                 float key = 0;
                 for(float x : best_move.keySet())
                 {

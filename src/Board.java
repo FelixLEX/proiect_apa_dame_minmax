@@ -105,7 +105,9 @@ public class Board {
             {
                 if (!board[i][j].is_fake && board[i][j].color == color)
                 {
-                    pieces.add(new Piece(board[i][j]));
+                    if (available_to_move(board[i][j])) {
+                        pieces.add(new Piece(board[i][j]));
+                    }
                 }
             }
         }
@@ -154,7 +156,12 @@ public class Board {
 
     public float get_game_value()
     {
+<<<<<<< Updated upstream
         return (float) (white_left - black_left + (white_kings * 0.5 - black_kings * 0.5));
+=======
+        return (float) ((white_left - black_left) + (white_kings * 0.5 - black_kings * 0.5));
+//        return (float) (white_left - black_left);
+>>>>>>> Stashed changes
     }
 
 
@@ -280,10 +287,18 @@ public class Board {
             }
         }
 
-
         return moves;
     }
 
+
+    public boolean available_to_move(Piece piece)
+    {
+        if (get_valid_moves(piece).keySet().isEmpty())
+        {
+            return false;
+        }
+        return true;
+    }
 
     private Map<Point, List<Piece>> traverse_left(int start, int stop, int step, Color color, int left, List<Piece> skipped) {
         Map<Point, List<Piece>> moves = new HashMap<Point, List<Piece>>();
