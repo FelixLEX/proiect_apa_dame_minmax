@@ -107,7 +107,6 @@ public class GamePanel extends JPanel implements Runnable {
 
     private void gameUpdate() {
         board.update(g);
-
     }
 
     private void show_winner()
